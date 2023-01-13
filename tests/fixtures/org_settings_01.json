@@ -1,0 +1,22 @@
+{
+    "login": "test-org",
+    "id": 9,
+    "node_id": "Mabcdefg=",
+    "description": "A test environment",
+    "is_verified": false,
+    "has_organization_projects": true,
+    "has_repository_projects": true,
+    "type": "Organization",
+    "total_private_repos": 0,
+    "owned_private_repos": 1,
+    "billing_email": "user@site.com",
+    "default_repository_permission": "read",
+    "members_can_create_repositories": true,
+    "two_factor_requirement_enabled": false,
+    "members_allowed_repository_creation_type": "all",
+    "members_can_create_public_repositories": true,
+    "members_can_create_private_repositories": true,
+    "members_can_create_internal_repositories": true,
+    "members_can_create_pages": true,
+    "members_can_fork_private_repositories": false
+}

@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Clean pycache",
+            "type": "shell",
+            "command": "find . | grep -E \"(__pycache__|.pytest_cache|\\.pyc$)\" | xargs rm -rf",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "revealProblems": "never",
+                "focus": false,
+                "echo": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false,
+                "close": true
+            }
+        },
+        {
+            "label": "Run pytest",
+            "type": "shell",
+            "command": "python -m pytest",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "revealProblems": "never",
+                "focus": false,
+                "echo": true,
+                "panel": "shared",
+                "showReuseMessage": false,
+                "clear": false
+            }
+        }
+    ]
+}
