@@ -1,10 +1,14 @@
 """Methods for using the GitHub API for organizations"""
 
+import sys
 from dataclasses import dataclass, field
 from enum import Enum, unique, auto
 from ghapi.all import GhApi
 from common.api import (
     GhPublicKey,
+    is_ghec,
+    create_client,
+    resolve_graphql_endpoint,
     encrypt_secret,
     rate_limited,
     call_with_exception_handler,
@@ -73,6 +77,14 @@ class OrgAllowedActions(SerializedEnum):
     ALL = auto()
     LOCAL_ONLY = auto()
     SELECTED = auto()
+
+
+@dataclass(frozen=True)
+class Organization(DictData):
+    node_id: str
+    url: str
+    name: str
+    description: str
 
 
 @dataclass(frozen=True)
@@ -453,3 +465,91 @@ def list_organization_repositories(
         paginated, client.repos.list_for_org, org=org, sort=str(sort), type=str(type)
     )
     return list(map(convert, result))
+
+
+def get_organizations_in_enterprise(hostname: str, token: str, enterprise: str):
+    """Retrieves the list of organizations in an enterprise"""
+
+    def convert(org):
+        return Organization(
+            node_id=org.node_id, url=org.url, name=org.login, description=org.description
+        )
+
+    if is_ghec(hostname):
+        return get_organizations_in_cloud_enterprise(
+            resolve_graphql_endpoint(hostname=hostname),
+            token=token,
+            enterprise=enterprise,
+        )
+    else:
+        client = create_client(hostname=hostname, token=token)
+        result = call_with_exception_handler(paginated, client.orgs.list)
+        return list(
+            filter(
+                lambda e: e.name != "actions" and e.name != "github", map(convert, result)
+            )
+        )
+
+
+def get_organizations_in_cloud_enterprise(endpoint: str, token: str, enterprise: str):
+    """Retrieves the list of organizations in a GHEC enterprise"""
+    query = """
+    query($slug: String!, $endCursor: String) {
+        enterprise(slug: $slug) {
+            organizations(first: 100, after: $endCursor) {
+                pageInfo {
+                    hasNextPage
+                    endCursor
+                }
+                nodes {
+                    id
+                    login
+                    description
+                    url
+                }
+            }
+        }
+    }
+    """
+
+    has_next_page = True
+    end_cursor = None
+    values = []
+    while has_next_page:
+        result = graphql_query(
+            query,
+            token,
+            endpoint=endpoint,
+            variables={"slug": enterprise, "endCursor": end_cursor},
+        )
+        print(result)
+        if (
+            result is None
+            or result["data"] is None
+            or result["data"]["enterprise"] is None
+        ):
+            if "errors" in result:
+                print(
+                    f"Error retrieving organizations from '{enterprise}': {result['errors']}",
+                    file=sys.stderr,
+                )
+            else:
+                print(
+                    f"No organizations found in '{enterprise}'. Token requires read:enterprise permissions",
+                    file=sys.stderr,
+                )
+            exit(1)
+        entries = result["data"]["enterprise"]["organizations"]
+        for item in entries["nodes"]:
+            values.append(
+                Organization(
+                    description=item["description"],
+                    node_id=item["id"],
+                    name=item["login"],
+                    url=item["url"],
+                )
+            )
+        has_next_page = False and entries["pageInfo"]["hasNextPage"]
+        end_cursor = entries["pageInfo"]["endCursor"]
+
+    return values
