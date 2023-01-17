@@ -522,7 +522,7 @@ def get_organizations_in_cloud_enterprise(endpoint: str, token: str, enterprise:
             endpoint=endpoint,
             variables={"slug": enterprise, "endCursor": end_cursor},
         )
-        print(result)
+
         if (
             result is None
             or result["data"] is None
@@ -538,7 +538,7 @@ def get_organizations_in_cloud_enterprise(endpoint: str, token: str, enterprise:
                     f"No organizations found in '{enterprise}'. Token requires read:enterprise permissions",
                     file=sys.stderr,
                 )
-            exit(1)
+            sys.exit(1)
         entries = result["data"]["enterprise"]["organizations"]
         for item in entries["nodes"]:
             values.append(
@@ -549,7 +549,7 @@ def get_organizations_in_cloud_enterprise(endpoint: str, token: str, enterprise:
                     url=item["url"],
                 )
             )
-        has_next_page = False and entries["pageInfo"]["hasNextPage"]
+        has_next_page = entries["pageInfo"]["hasNextPage"]
         end_cursor = entries["pageInfo"]["endCursor"]
 
     return values
