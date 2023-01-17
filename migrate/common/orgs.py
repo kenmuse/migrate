@@ -17,6 +17,28 @@ from common.types import SerializedEnum, DictData, alternative_name
 
 
 @unique
+class OrgRepoSort(SerializedEnum):
+    """Indicates the sort order for a repository list"""
+
+    CREATED = auto()
+    UPDATED = auto()
+    PUSHED = auto()
+    FULL_NAME = auto()
+
+
+@unique
+class OrgRepoType(SerializedEnum):
+    """Indicates the type of repositories to list"""
+
+    ALL = auto()
+    PUBLIC = auto()
+    PRIVATE = auto()
+    FORKS = auto()
+    SOURCES = auto()
+    MEMBER = auto()
+
+
+@unique
 class OrgSecretVisibility(SerializedEnum):
     """Indicates the visibility for an organization secret"""
 
@@ -414,3 +436,20 @@ def delete_org_ip_allow_list_entry(endpoint: str, token: str, entry_id: str):
         variables={"entry_id": entry_id},
     )
     return result
+
+
+def list_organization_repositories(
+    client: GhApi,
+    org: str,
+    sort: OrgRepoSort = OrgRepoSort.FULL_NAME,
+    type: OrgRepoType = OrgRepoType.ALL,
+) -> list[Repo]:
+    """Lists the repositories in a specified organization"""
+
+    def convert(repo):
+        return Repo.deserialize(repo)
+
+    result = call_with_exception_handler(
+        paginated, client.repos.list_for_org, org=org, sort=str(sort), type=str(type)
+    )
+    return list(map(convert, result))

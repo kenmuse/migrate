@@ -7,6 +7,7 @@ from ghapi.all import GhApi
 from common.api import (
     GhPublicKey,
     encrypt_secret,
+    paginated,
     rate_limited,
     call_with_exception_handler,
 )
@@ -28,10 +29,13 @@ class Repo(DictData):
 
     name: str
     id: int  # pylint: disable=invalid-name
+    node_id: str
     owner: str
     full_name: str
     url: str
     is_private: bool
+    default_branch: str
+    visibility: RepoVisibility
 
     @staticmethod
     def deserialize(repo):
@@ -40,8 +44,11 @@ class Repo(DictData):
             owner=repo.owner.login,
             full_name=repo.full_name,
             id=repo.id,
+            node_id=repo.node_id,
             url=repo.url,
             is_private=repo.private,
+            default_branch=repo.default_branch,
+            visibility=repo.visibility,
         )
 
 

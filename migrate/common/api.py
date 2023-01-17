@@ -11,10 +11,19 @@ import sys
 import time
 from base64 import b64encode
 from dataclasses import dataclass
-from common.types import DictData
+from enum import unique, auto
+from common.types import DictData, SerializedEnum
 from fastcore.net import HTTP4xxClientError
 from ghapi.all import GhApi, print_summary
 from nacl import encoding, public
+
+
+@unique
+class SortDirection(SerializedEnum):
+    """Indicates the sort order for an ordered query"""
+
+    ASC = auto()
+    DESC = auto()
 
 
 @dataclass
