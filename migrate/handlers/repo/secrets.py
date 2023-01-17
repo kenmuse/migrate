@@ -3,18 +3,17 @@ Secrets command implementation
 """
 
 import sys
-import click
-from yaml import load, dump
 
+import click
+from common.api import create_client
 from common.options import (
     CONTEXT_SETTINGS,
-    migration_options,
-    MigrationState,
-    pass_migrationstate,
+    TargetState,
+    pass_targetstate,
+    target_options,
 )
-from common.options import target_options, TargetState, pass_targetstate
-from common.api import create_client
 from common.repos import set_repo_secret
+from yaml import dump, load
 
 try:
     from yaml import CLoader as Loader

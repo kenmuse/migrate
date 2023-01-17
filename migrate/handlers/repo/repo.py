@@ -9,6 +9,7 @@ from common.options import (
 )
 from .secrets import repo_secrets
 from .settings import repo_settings
+from .visibility import repo_visibility
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -18,3 +19,4 @@ def repo():
 
 repo.add_command(repo_secrets)
 repo.add_command(repo_settings)
+repo.add_command(repo_visibility)

@@ -1,23 +1,22 @@
 """
-Secrets command implementation
+Repo settings command implementation
 """
 
 import sys
-import click
-from yaml import load, dump
 
+import click
+from common.api import create_client
 from common.options import (
     CONTEXT_SETTINGS,
-    migration_options,
     MigrationState,
+    TargetState,
+    migration_options,
     pass_migrationstate,
+    pass_targetstate,
+    target_options,
 )
-from common.options import target_options, TargetState, pass_targetstate
-from common.api import create_client
-from common.repos import (
-    get_repo_settings,
-    set_repo_settings,
-)
+from common.repos import get_repo_settings, set_repo_settings
+from yaml import dump, load
 
 try:
     from yaml import CLoader as Loader

@@ -175,6 +175,27 @@ def get_repo_settings(
 
 
 @rate_limited
+def set_repo_visibility(client: GhApi, org: str, repo: str, visibility: RepoVisibility):
+    """Sets the repository visibility"""
+    result = call_with_exception_handler(
+        f"{org}/{repo}",
+        client.repos.update,
+        owner=org,
+        repo=repo,
+        visibility=str(visibility),
+    )
+    return result
+
+
+def get_repo_visibility(client: GhApi, org: str, repo: str) -> RepoVisibility:
+    """Gets the repository visibility"""
+    result = call_with_exception_handler(
+        f"{org}/{repo}", client.repos.get, owner=org, repo=repo
+    )
+    return RepoVisibility.from_str(result.visibility)
+
+
+@rate_limited
 def set_repo_settings(client: GhApi, org: str, repo: str, settings: RepoSettings):
     """Configures the repository using the provided settings"""
 
