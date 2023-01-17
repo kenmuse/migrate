@@ -14,10 +14,10 @@ def test_help(runner):
 
 
 def test_orgs_command(runner):
-    result = runner.invoke(cli, ["orgs"], catch_exceptions=False)
+    result = runner.invoke(cli, ["org"], catch_exceptions=False)
     assert result.exit_code == 0
 
 
 def test_repos_comment(runner):
-    result = runner.invoke(cli, ["repos"], catch_exceptions=False)
+    result = runner.invoke(cli, ["repo"], catch_exceptions=False)
     assert result.exit_code == 0

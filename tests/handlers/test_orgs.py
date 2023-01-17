@@ -145,7 +145,7 @@ def expected_HttpErrorResponse(response: HttpErrorResponse):
 def test_orgs_get_ipallow_not_authenticated(response_forbidden, target_settings, runner):
     result = runner.invoke(
         cli,
-        ["orgs", "get-ipallow", *target_settings],
+        ["org", "ipallow", "list", *target_settings],
         catch_exceptions=False,
     )
     assert result.output == expected_HttpErrorResponse(response_forbidden)
@@ -155,7 +155,7 @@ def test_orgs_get_ipallow_not_authenticated(response_forbidden, target_settings,
 def test_orgs_get_ipallow_not_authorized(response_not_found, target_settings, runner):
     result = runner.invoke(
         cli,
-        ["orgs", "get-ipallow", *target_settings],
+        ["org", "ipallow", "list", *target_settings],
         catch_exceptions=False,
     )
     assert result.output == expected_HttpErrorResponse(response_not_found)
@@ -173,7 +173,7 @@ def test_org_show_settings(
     file_path = tmp_path / "settings.yml"
     result = runner.invoke(
         cli,
-        ["orgs", "show-settings", "-f", file_path, *target_settings],
+        ["org", "settings", "list", "-f", file_path, *target_settings],
         catch_exceptions=False,
     )
     assert result.exit_code == 0

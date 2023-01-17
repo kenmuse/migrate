@@ -58,8 +58,9 @@ def test_repos_get_settings(target_settings, urlread_settings_response, runner):
     result = runner.invoke(
         cli,
         [
-            "repos",
-            "show-settings",
+            "repo",
+            "settings",
+            "list",
             *target_settings,
             "test-repo",
         ],
@@ -80,8 +81,9 @@ def test_repos_show_settings(
     result = runner.invoke(
         cli,
         [
-            "repos",
-            "show-settings",
+            "repo",
+            "settings",
+            "list",
             "-f",
             file_path,
             *target_settings,

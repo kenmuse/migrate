@@ -17,7 +17,6 @@ from common.api import create_client
 from common.repos import (
     get_repo_settings,
     set_repo_settings,
-    set_repo_secret,
 )
 
 try:
@@ -26,12 +25,12 @@ except ImportError:
     from yaml import Loader
 
 
-@click.group(context_settings=CONTEXT_SETTINGS)
-def repos():
-    """Provides commands for migrating repository resources"""
+@click.group("settings", context_settings=CONTEXT_SETTINGS)
+def repo_settings():
+    """Repository settings"""
 
 
-@repos.command("show-settings", no_args_is_help=True)
+@repo_settings.command("list", no_args_is_help=True)
 @click.argument("repo")
 @click.option(
     "-f",
@@ -51,7 +50,7 @@ def repos():
 )
 @target_options
 @pass_targetstate
-def show_settings(ctx: TargetState, repo: str, output: click.File, compact: bool):
+def list_settings(ctx: TargetState, repo: str, output: click.File, compact: bool):
     """Lists the repo settings"""
     api = create_client(hostname=ctx.hostname, token=ctx.token)
     settings = get_repo_settings(api, ctx.org, repo)
@@ -61,7 +60,7 @@ def show_settings(ctx: TargetState, repo: str, output: click.File, compact: bool
         dump(settings.to_dict(), output)
 
 
-@repos.command("copy-settings", no_args_is_help=True)
+@repo_settings.command("copy", no_args_is_help=True)
 @click.option("-sr", "--src", help="The source repository")
 @click.option("-dr", "--dest", help="The destination repository")
 @click.option(
@@ -83,7 +82,7 @@ def copy_settings(ctx: MigrationState, src, dest, include_ghas):
     set_repo_settings(dest_client, ctx.dest_org, dest, src_settings)
 
 
-@repos.command("update-settings", no_args_is_help=True)
+@repo_settings.command("load", no_args_is_help=True)
 @click.argument("repo")
 @click.option(
     "-f",
@@ -123,27 +122,3 @@ def loads_settings(ctx: TargetState, repo: str, settings: click.File, include_gh
         )
 
     click.echo(settings)
-
-
-@repos.command("load-secrets", no_args_is_help=True)
-@click.argument("repo", required=True)
-@click.option(
-    "--settings",
-    required=False,
-    type=click.File("r"),
-    default=sys.stdin,
-    help="YAML file containing the secrets. If not provided, stdin is used.",
-)
-@target_options
-@pass_targetstate
-def load_secrets(ctx: TargetState, repo: str, settings: click.File):
-    """Loads secrets from a YAML file provided as an argument or from stdin
-
-    REPO: The name of the repository
-    """
-    config = load(settings.read(), Loader=Loader)
-    api = create_client(hostname=ctx.hostname, token=ctx.token)
-    for name, value in config.items():
-        click.echo(
-            set_repo_secret(client=api, org=ctx.org, repo=repo, name=name, value=value)
-        )
