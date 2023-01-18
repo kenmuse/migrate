@@ -16,6 +16,7 @@ from .handlers import repo, org, enterprise
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
+@click.version_option()
 def cli():
     """Provides support for migrating GitHub resources programmatically"""
 
