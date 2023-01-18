@@ -108,16 +108,16 @@ def loads_settings(ctx: TargetState, repo: str, settings: click.File, include_gh
     """
     api = create_client(hostname=ctx.hostname, token=ctx.token)
     config = load(settings.read(), Loader=Loader)
-    repo_settings = get_repo_settings(
+    old_settings = get_repo_settings(
         client=api, org=ctx.org, repo=repo, include_ghas=include_ghas
     )
 
-    settings = repo_settings.update(config)
-    if settings != repo_settings:
+    new_settings = old_settings.update(config)
+    if new_settings != old_settings:
         if not include_ghas:
             repo_settings.ghas = None
         repo_settings = set_repo_settings(
-            client=api, org=ctx.org, repo=repo, settings=settings
+            client=api, org=ctx.org, repo=repo, settings=new_settings
         )
 
-    click.echo(settings)
+    click.echo(new_settings)

@@ -229,8 +229,17 @@ def set_org_secret(
 
 
 def get_org_settings(client: GhApi, org: str):
-    """Retrieves the organization details"""
-    result = client.orgs.get(org)
+    """Retrieves the organization configuration"""
+    result = call_with_exception_handler(context=org, func=client.orgs.get, org=org)
+    return OrgSettings.from_dict(result)
+
+
+@rate_limited
+def set_org_settings(client: GhApi, org: str, settings: OrgSettings):
+    """Updates the organization configuration"""
+    result = call_with_exception_handler(
+        org, client.orgs.update, org=org, **settings.to_dict()
+    )
     return OrgSettings.from_dict(result)
 
 
