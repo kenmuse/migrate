@@ -4,7 +4,7 @@ import sys
 from dataclasses import dataclass, field
 from enum import Enum, unique, auto
 from ghapi.all import GhApi
-from common.api import (
+from .api import (
     GhPublicKey,
     is_ghec,
     create_client,
@@ -16,8 +16,8 @@ from common.api import (
     paginated,
     graphql_query,
 )
-from common.repos import Repo
-from common.types import SerializedEnum, DictData, alternative_name
+from .repos import Repo
+from .types import SerializedEnum, DictData, alternative_name
 
 
 @unique

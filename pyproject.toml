@@ -33,7 +33,12 @@ line-length = 90
 dev = [
     "black>=22.3.0",
     "flake8>=4.0.1",
-    "setuptools>=65.6.3"
+    "setuptools>=65.6.3",
+    "hatch>=1.6.3"
 ]
 
 [project.scripts]
+migrate = "migrate.main:cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["migrate"]

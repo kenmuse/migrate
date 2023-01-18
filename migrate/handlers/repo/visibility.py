@@ -5,8 +5,8 @@ Repo visibility command implementation
 import sys
 
 import click
-from common.api import create_client
-from common.options import (
+from ...common.api import create_client
+from ...common.options import (
     CONTEXT_SETTINGS,
     MigrationState,
     TargetState,
@@ -15,7 +15,7 @@ from common.options import (
     pass_targetstate,
     target_options,
 )
-from common.repos import get_repo_visibility, set_repo_visibility, RepoVisibility
+from ...common.repos import get_repo_visibility, set_repo_visibility, RepoVisibility
 from yaml import dump, load
 
 try:

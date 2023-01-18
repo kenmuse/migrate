@@ -1,11 +1,11 @@
 from ghapi.all import GhApi
-from common.api import (
+from .api import (
     GhPublicKey,
     encrypt_secret,
     rate_limited,
     call_with_exception_handler,
 )
-from common.repos import get_repository_id
+from .repos import get_repository_id
 
 
 def get_environment_public_key(client: GhApi, org: str, repo: str, environment: str):

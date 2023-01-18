@@ -5,14 +5,14 @@ Secrets command implementation
 import sys
 
 import click
-from common.api import create_client
-from common.options import (
+from ...common.api import create_client
+from ...common.options import (
     CONTEXT_SETTINGS,
     TargetState,
     pass_targetstate,
     target_options,
 )
-from common.repos import set_repo_secret
+from ...common.repos import set_repo_secret
 from yaml import dump, load
 
 try:

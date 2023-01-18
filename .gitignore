@@ -3,3 +3,6 @@ __pycache__
 config.yml
 .pytest_cache
 .DS_Store
+.migrate.egg-info
+build
+dist

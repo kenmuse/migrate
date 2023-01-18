@@ -6,9 +6,14 @@ import sys
 import click
 import json
 from yaml import dump
-from common.options import CONTEXT_SETTINGS, pass_targetstate, target_options, TargetState
-from common.api import create_client
-from common.orgs import list_organization_repositories, OrgRepoSort, OrgRepoType
+from ...common.options import (
+    CONTEXT_SETTINGS,
+    pass_targetstate,
+    target_options,
+    TargetState,
+)
+from ...common.api import create_client
+from ...common.orgs import list_organization_repositories, OrgRepoSort, OrgRepoType
 from .secrets import repo_secrets
 from .settings import repo_settings
 from .visibility import repo_visibility

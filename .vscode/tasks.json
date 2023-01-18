@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Clean pycache",
+            "label": "Clean Caches",
             "type": "shell",
-            "command": "find . | grep -E \"(__pycache__|.pytest_cache|\\.pyc$)\" | xargs rm -rf",
+            "command": "find . | grep -E \"(__pycache__|.pytest_cache|.migrate.egg-info|\\.pyc$)\" | xargs rm -rf",
             "problemMatcher": [],
             "presentation": {
                 "reveal": "always",

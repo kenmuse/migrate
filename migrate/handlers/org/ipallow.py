@@ -3,9 +3,14 @@ Org IP-Allow command implementation
 """
 
 import click
-from common.api import create_client
-from common.options import CONTEXT_SETTINGS, TargetState, pass_targetstate, target_options
-from common.orgs import (
+from ...common.api import create_client
+from ...common.options import (
+    CONTEXT_SETTINGS,
+    TargetState,
+    pass_targetstate,
+    target_options,
+)
+from ...common.orgs import (
     create_org_ip_allow_list_entry,
     delete_org_ip_allow_list_entry,
     get_org_ip_allow_list,

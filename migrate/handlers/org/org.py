@@ -5,14 +5,14 @@ Orgs command implementation
 import sys
 import click
 import json
-from common.options import (
+from ...common.options import (
     CONTEXT_SETTINGS,
     target_options,
     TargetState,
     pass_targetstate,
 )
-from common.api import create_client
-from common.orgs import (
+from ...common.api import create_client
+from ...common.orgs import (
     get_org_settings,
     get_org_actions_permissions,
     set_org_actions_permissions,

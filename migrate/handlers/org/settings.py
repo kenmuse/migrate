@@ -5,9 +5,14 @@ Org settings command implementation
 import sys
 
 import click
-from common.api import create_client
-from common.options import CONTEXT_SETTINGS, TargetState, pass_targetstate, target_options
-from common.orgs import get_org_settings
+from ...common.api import create_client
+from ...common.options import (
+    CONTEXT_SETTINGS,
+    TargetState,
+    pass_targetstate,
+    target_options,
+)
+from ...common.orgs import get_org_settings
 from yaml import dump, load
 
 try:

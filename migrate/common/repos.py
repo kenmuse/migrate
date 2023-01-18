@@ -4,14 +4,14 @@ from copy import copy
 from dataclasses import dataclass, fields
 from enum import Enum, unique, auto
 from ghapi.all import GhApi
-from common.api import (
+from .api import (
     GhPublicKey,
     encrypt_secret,
     paginated,
     rate_limited,
     call_with_exception_handler,
 )
-from common.types import SerializedEnum, DictData, alternative_name
+from .types import SerializedEnum, DictData, alternative_name
 
 
 @unique

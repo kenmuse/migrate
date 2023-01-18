@@ -5,9 +5,14 @@ Org secrets command implementation
 import sys
 
 import click
-from common.api import create_client
-from common.options import CONTEXT_SETTINGS, TargetState, pass_targetstate, target_options
-from common.orgs import OrgSecretVisibility, list_org_secrets, set_org_secret
+from ...common.api import create_client
+from ...common.options import (
+    CONTEXT_SETTINGS,
+    TargetState,
+    pass_targetstate,
+    target_options,
+)
+from ...common.orgs import OrgSecretVisibility, list_org_secrets, set_org_secret
 from yaml import dump, load
 
 try:

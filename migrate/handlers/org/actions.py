@@ -3,9 +3,14 @@ Orgs actions command implementation
 """
 
 import click
-from common.api import create_client
-from common.options import CONTEXT_SETTINGS, TargetState, pass_targetstate, target_options
-from common.orgs import (
+from ...common.api import create_client
+from ...common.options import (
+    CONTEXT_SETTINGS,
+    TargetState,
+    pass_targetstate,
+    target_options,
+)
+from ...common.orgs import (
     OrgSecretVisibility,
     get_org_actions_permissions,
     get_org_permissions_allowed_actions,
