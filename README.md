@@ -37,6 +37,34 @@ This enables the command line parameters to be centralized and referenced from a
     - `orgs` - Organization-related APIs
     - `repos` - Repository-related APIs
   - `handlers` - defines the Click-based command line options, with a handler per group of commands. These can be refactored into additional subcommands in the future.
-    - `orgs` - Organization-related command line options. Invokes the appropriate APIs to operate on organizations, generally from `common.orgs`.
-    - `repos` - Repository-related command line options. Invokes the appropriate APIs to operate on repositories, generally from `common.repos`.
+    - `org` - Organization-related command line options. Invokes the appropriate APIs to operate on organizations, generally from `common.orgs`. Modules in this package implement additional subcommands.
+    - `repo` - Repository-related command line options. Invokes the appropriate APIs to operate on repositories, generally from `common.repos`. Modules in this package implement additional subcommands.
+    - `enterprise` - Enterprise-related command line options. Invokes the appropriate APIs to operate on enterprise resources. Modules in this package implement additional subcommands.
 - `tests` - Unit and integration tests
+
+At the root of the project are the following files which support the packaging and deployment process:
+
+- `entitlements.plist` - macOS entitlements file. This supports compiling a signable console application on macOS.
+- `migrate.py` - PyInstaller entry point. This is a wrapper around `migrate.main` to support running as a script. PyInstaller does not support running modules directly and requires the entry script to not contain relative imports. There are known issues with the module resolution if the script is located within the root package folder.
+- `migrate.spec` - PyInstaller configuration file, configured to use the entry point `migrate.py` and the `--onefile option` (to create a single executable file).
+- `pyproject.toml` - Python project configuration file. This is used to manage the dependencies and build the application.
+
+## Command-line
+
+The application is invoked using `python -m migrate.main`. By default, help will be displayed for each verb or action that is available. The application also supports running as a script using `python migrate/main.py`.
+
+## Platform-specific compilation
+
+The application is compiled to a native executabl using PyInstaller. The following command is used to compile the application:
+
+```bash
+pyinstaller migrate.spec
+```
+
+or alternatively,
+
+```bash
+pyinstaller --onefile migrate.py
+```
+
+Note that PyInstaller does not support cross-compilation and will only compile for the currently targeted system.
