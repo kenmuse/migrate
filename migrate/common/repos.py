@@ -234,3 +234,21 @@ def set_repo_ghas_settings(client: GhApi, org: str, repo: str, settings: GhasSet
         security_and_analysis=settings.serialize(),
     )
     return RepoSettings.deserialize(result, include_ghas=True)
+
+
+def list_workflow_runs(client: GhApi, org: str, repo: str):
+    """Lists the workflow runs for the provided repo"""
+    result = call_with_exception_handler(
+        f"{org}/{repo}",
+        paginated,
+        client.actions.list_workflow_runs_for_repo,
+        owner=org,
+        repo=repo,
+    )
+    return [
+        run
+        for resp in result
+        if result
+        for run in resp["workflow_runs"]
+        if "workflow_runs" in resp
+    ]
