@@ -1,4 +1,4 @@
-"""Methods for using the GitHub API for organizations"""
+"""Methods for using the GitHub API for repositories"""
 
 from copy import copy
 from dataclasses import dataclass, fields
