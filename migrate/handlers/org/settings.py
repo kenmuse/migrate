@@ -70,7 +70,7 @@ def list_settings(ctx: TargetState, output: click.File, compact: bool):
 )
 @migration_options
 @pass_migrationstate
-def copy_settings(ctx: MigrationState, include_ghas: bool):
+def copy_settings(ctx: MigrationState):
     """Copies the settings from one organization to another"""
     src_client = create_client(hostname=ctx.src_hostname, token=ctx.src_token)
     dest_client = create_client(hostname=ctx.dest_hostname, token=ctx.dest_token)
@@ -87,17 +87,9 @@ def copy_settings(ctx: MigrationState, include_ghas: bool):
     default=sys.stdin,
     help="YAML file containing the settings. If not provided, stdin is used.",
 )
-@click.option(
-    "-ghas",
-    "--include-ghas",
-    is_flag=True,
-    help="Include GitHub Advanced Security settings",
-    default=False,
-    required=False,
-)
 @target_options
 @pass_targetstate
-def load_settings(ctx: TargetState, settings: click.File, include_ghas: bool):
+def load_settings(ctx: TargetState, settings: click.File):
     """Updates the organization settings from a provided file"""
     api = create_client(hostname=ctx.hostname, token=ctx.token)
     config = load(settings.read(), Loader=Loader)

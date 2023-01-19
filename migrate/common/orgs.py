@@ -109,7 +109,21 @@ class IpAllowListEntry(DictData):
 
 
 @dataclass(frozen=True)
-class OrgSettings(DictData):
+class OrgGhasSettings(DictData):
+    advanced_security_enabled_for_new_repositories: bool = field(default=False)
+    dependabot_alerts_enabled_for_new_repositories: bool = field(default=False)
+    dependabot_security_updates_enabled_for_new_repositories: bool = field(default=False)
+    dependency_graph_enabled_for_new_repositories: bool = field(default=False)
+    secret_scanning_enabled_for_new_repositories: bool = field(default=False)
+    secret_scanning_push_protection_enabled_for_new_repositories: bool = field(
+        default=False
+    )
+    secret_scanning_push_protection_custom_link_enabled: bool = field(default=False)
+    secret_scanning_push_protection_custom_link: str = field(default=False)
+
+
+@dataclass(frozen=True)
+class OrgSettings(OrgGhasSettings):
     company: str = field(default=None)
     email: str = field(default=None)
     twitter_username: str = field(default=None)
@@ -153,16 +167,6 @@ class OrgSettings(DictData):
         default=False, metadata=alternative_name("members_can_create_pages")
     )
     members_can_fork_private_repositories: bool = field(default=False)
-    advanced_security_enabled_for_new_repositories: bool = field(default=False)
-    dependabot_alerts_enabled_for_new_repositories: bool = field(default=False)
-    dependabot_security_updates_enabled_for_new_repositories: bool = field(default=False)
-    dependency_graph_enabled_for_new_repositories: bool = field(default=False)
-    secret_scanning_enabled_for_new_repositories: bool = field(default=False)
-    secret_scanning_push_protection_enabled_for_new_repositories: bool = field(
-        default=False
-    )
-    secret_scanning_push_protection_custom_link_enabled: bool = field(default=False)
-    secret_scanning_push_protection_custom_link: str = field(default=False)
 
 
 @dataclass(frozen=True)
