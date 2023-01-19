@@ -12,7 +12,7 @@ if __package__ is None:
     __package__ = DIR.name
 
 from .common.options import CONTEXT_SETTINGS
-from .handlers import repo, org, enterprise
+from .handlers import repo, org, enterprise, pull, check
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -24,6 +24,8 @@ def cli():
 cli.add_command(org)
 cli.add_command(repo)
 cli.add_command(enterprise)
+cli.add_command(pull)
+cli.add_command(check)
 
 if __name__ == "__main__":
     cli()

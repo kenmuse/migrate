@@ -3,6 +3,7 @@
 from dataclasses import dataclass, field, fields, asdict
 from enum import Enum, auto, unique
 from typing import Callable, Any
+import fastcore
 import json
 
 
@@ -101,3 +102,10 @@ class SerializedEnum(Enum):
     def from_str(cls, val: str):
         """Converts a string to the appropriate enumeration value"""
         return cls[val.upper()]
+
+
+class FastcoreJsonEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, fastcore.foundation.L):
+            return o.items
+        return json.JSONEncoder.default(self, o)

@@ -84,7 +84,7 @@ def copy_settings(ctx: MigrationState, src, dest, include_ghas):
 )
 @target_options
 @pass_targetstate
-def loads_settings(ctx: TargetState, repo: str, settings: click.File):
+def load_settings(ctx: TargetState, repo: str, settings: click.File):
     """Updates the repo settings from a provided file
 
     REPO: The name of the repository
