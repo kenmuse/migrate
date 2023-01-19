@@ -55,7 +55,7 @@ The application is invoked using `python -m migrate.main`. By default, help will
 
 ## Platform-specific compilation
 
-The application is compiled to a native executabl using PyInstaller. The following command is used to compile the application:
+The application can be compiled to a native executable using PyInstaller. The following command is used to compile the application, creating a single executable file in the `/dist` folder:
 
 ```bash
 pyinstaller migrate.spec
