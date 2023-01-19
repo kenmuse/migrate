@@ -3,19 +3,27 @@ Supports accessing and using the GitHub API
 """
 
 import functools
+import gzip
 import json
 import os
 import re
-import requests
 import sys
 import time
+import zipfile
 from base64 import b64encode
+from collections import namedtuple
 from dataclasses import dataclass
-from enum import unique, auto
-from .types import DictData, SerializedEnum
+from enum import auto, unique
+from io import BytesIO
+
+import requests
 from fastcore.net import HTTP4xxClientError
 from ghapi.all import GhApi, print_summary
 from nacl import encoding, public
+
+from .types import DictData, SerializedEnum
+
+FileData = namedtuple("FileData", ["name", "content"])
 
 
 @unique
@@ -89,9 +97,10 @@ def _resolve_api_service_endpoint(host: str, ghec_path: str, ghes_path: str):
 
 
 def configure_proxy(http: str, https: str, disable_ssl: bool = False):
-    from urllib.request import ProxyHandler, build_opener
-    import fastcore.net
     import ssl
+    from urllib.request import ProxyHandler, build_opener
+
+    import fastcore.net
 
     if disable_ssl:
         ssl._create_default_https_context = ssl._create_unverified_context
@@ -232,3 +241,36 @@ def paginated(operation, per_page=100, page=1, **kwargs):
         )
         yield result
         page += 1
+
+
+def download_file(url: str, token: str, allow_redirects: bool = True):
+    """Downloads a file from a URL and returns a FileData object or None"""
+    headers = {
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Authorization": f"Bearer {token}",
+    }
+    response = requests.get(url, headers=headers, allow_redirects=allow_redirects)
+    if response.status_code != 200:
+        return None
+
+    header = (
+        response.headers["Content-Disposition"]
+        if "Content-Disposition" in response.headers
+        else ""
+    )
+    filename = re.findall("filename=([^;]+)|$", header)[0].strip()
+
+    return FileData(name=filename, content=response.content)
+
+
+def gunzip_text_file(content: bytes):
+    """Decompresses a gzip file and returns the text content"""
+    return gzip.decompress(content).decode("utf-8")
+
+
+def unzip_file(content: bytes):
+    """Unzips a file and returns a list of FileData objects"""
+    bytes = BytesIO(content)
+    zip = zipfile.ZipFile(bytes)
+    for name in zip.namelist():
+        yield FileData(name=name, content=zip.read(name).decode("utf-8"))
