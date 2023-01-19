@@ -62,15 +62,6 @@ def list_settings(ctx: TargetState, repo: str, output: click.File, compact: bool
 @repo_settings.command("copy", no_args_is_help=True)
 @click.option("-sr", "--src", help="The source repository")
 @click.option("-dr", "--dest", help="The destination repository")
-@click.option(
-    "-ghas",
-    "--include-ghas",
-    is_flag=True,
-    help="Include GitHub Advanced Security settings (default:False)",
-    default=False,
-    flag_value=True,
-    required=False,
-)
 @migration_options
 @pass_migrationstate
 def copy_settings(ctx: MigrationState, src, dest, include_ghas):
@@ -91,31 +82,19 @@ def copy_settings(ctx: MigrationState, src, dest, include_ghas):
     default=sys.stdin,
     help="YAML file containing the settings. If not provided, stdin is used.",
 )
-@click.option(
-    "-ghas",
-    "--include-ghas",
-    is_flag=True,
-    help="Include GitHub Advanced Security settings",
-    default=False,
-    required=False,
-)
 @target_options
 @pass_targetstate
-def loads_settings(ctx: TargetState, repo: str, settings: click.File, include_ghas: bool):
+def loads_settings(ctx: TargetState, repo: str, settings: click.File):
     """Updates the repo settings from a provided file
 
     REPO: The name of the repository
     """
     api = create_client(hostname=ctx.hostname, token=ctx.token)
     config = load(settings.read(), Loader=Loader)
-    old_settings = get_repo_settings(
-        client=api, org=ctx.org, repo=repo, include_ghas=include_ghas
-    )
+    old_settings = get_repo_settings(client=api, org=ctx.org, repo=repo)
 
     new_settings = old_settings.update(config)
     if new_settings != old_settings:
-        if not include_ghas:
-            repo_settings.ghas = None
         repo_settings = set_repo_settings(
             client=api, org=ctx.org, repo=repo, settings=new_settings
         )

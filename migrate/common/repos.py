@@ -130,11 +130,11 @@ class RepoSettings(DictData):
         return result
 
     @staticmethod
-    def deserialize(settings, include_ghas: bool):
+    def deserialize(settings):
         """Converts the settings from a dict for deserialization"""
         ghas = (
             GhasSettings.deserialize(settings.security_and_analysis)
-            if include_ghas and hasattr(settings, "security_and_analysis")
+            if "security_and_analysis" in settings
             else None
         )
         return RepoSettings(ghas=ghas).update(settings)
@@ -171,14 +171,12 @@ def set_repo_secret(client: GhApi, org: str, repo: str, name: str, value: str):
     return results
 
 
-def get_repo_settings(
-    client: GhApi, org: str, repo: str, include_ghas=True
-) -> RepoSettings:
+def get_repo_settings(client: GhApi, org: str, repo: str) -> RepoSettings:
     """Gets the repository settings"""
     result = call_with_exception_handler(
         f"{org}/{repo}", client.repos.get, owner=org, repo=repo
     )
-    return RepoSettings.deserialize(result, include_ghas=include_ghas)
+    return RepoSettings.deserialize(result)
 
 
 @rate_limited
@@ -219,13 +217,10 @@ def set_repo_settings(client: GhApi, org: str, repo: str, settings: RepoSettings
         default_branch=settings.default_branch,
         allow_update_branch=settings.allow_update_branch,
         visibility=settings.visibility,
+        security_and_analysis=settings.ghas.serialize(),
     )
 
-    return (
-        RepoSettings.deserialize(result, include_ghas=False)
-        if settings.ghas is None
-        else set_repo_ghas_settings(client, org, repo, settings.ghas)
-    )
+    return RepoSettings.deserialize(result)
 
 
 @rate_limited
