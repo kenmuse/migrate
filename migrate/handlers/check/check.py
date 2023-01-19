@@ -54,14 +54,6 @@ def check():
     help="Output file. If not provided, stdout is used.",
 )
 @click.option(
-    "--raw",
-    help="Use raw output when reporting to stdout (default: False)",
-    is_flag=True,
-    flag_value=True,
-    default=False,
-    required=False,
-)
-@click.option(
     "--json/--yaml",
     "-j/-y",
     "is_json",
@@ -81,7 +73,6 @@ def list_runs(
     status: str,
     filter: str,
     output: click.File,
-    raw: bool,
     is_json: bool,
 ):
     """Lists the pull requests in a repository"""
@@ -96,15 +87,12 @@ def list_runs(
         status=status,
     )
 
-    if sys.stdout.isatty() and raw:
-        click.echo(response)
+    if is_json:
+        json.dump(
+            response,
+            output,
+            indent=2 if sys.stdout.isatty() else None,
+            cls=FastcoreJsonEncoder,
+        )
     else:
-        if is_json:
-            json.dump(
-                response,
-                output,
-                indent=2 if sys.stdout.isatty() else None,
-                cls=FastcoreJsonEncoder,
-            )
-        else:
-            dump(list(response), output)
+        dump(list(response), output)

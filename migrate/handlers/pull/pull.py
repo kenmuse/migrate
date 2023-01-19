@@ -53,14 +53,6 @@ def pull():
     help="Output file. If not provided, stdout is used.",
 )
 @click.option(
-    "--raw",
-    help="Use raw output when reporting to stdout (default: False)",
-    is_flag=True,
-    flag_value=True,
-    default=False,
-    required=False,
-)
-@click.option(
     "--json/--yaml",
     "-j/-y",
     "is_json",
@@ -79,7 +71,6 @@ def list_pulls(
     state: str,
     direction: str,
     output: click.File,
-    raw: bool,
     is_json: bool,
 ):
     """Lists the pull requests in a repository"""
@@ -87,16 +78,13 @@ def list_pulls(
     response = list_pull_requests(
         client=api, org=ctx.org, repo=repo, sort=sort, state=type, direction=direction
     )
-    if sys.stdout.isatty() and raw:
-        click.echo(response)
+
+    if is_json:
+        json.dump(
+            response,
+            output,
+            cls=FastcoreJsonEncoder,
+            indent=2 if sys.stdout.isatty() else None,
+        )
     else:
-        results = response
-        if is_json:
-            json.dump(
-                results,
-                output,
-                cls=FastcoreJsonEncoder,
-                indent=2 if sys.stdout.isatty() else None,
-            )
-        else:
-            dump(results, output)
+        dump(response, output)
