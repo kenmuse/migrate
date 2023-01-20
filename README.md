@@ -10,6 +10,15 @@ The project is configured to run in a [VS Code Dev Container](https://code.visua
 - Black
 - VS Code extensions to support the development.
 
+## Dependencies
+
+The dependencies are automatically installed when running in the dev container. If a dev container is not being used, you'll need to ensure Python 3.11 is installed. They run the following:
+
+```bash
+python3 -m pip install --user --editable .
+python3 -m pip install --user --editable ".[dev]"
+```
+
 ## Configuration
 
 The code supports both command line options and a configuration file in the following format:
@@ -58,13 +67,12 @@ The application is invoked using `python -m migrate.main`. By default, help will
 The application can be compiled to a native executable using PyInstaller. The following command is used to compile the application, creating a single executable file in the `/dist` folder:
 
 ```bash
+pyinstaller --onefile --hidden-import=cffi migrate.py
+```
+
+Or use the provided spec file:
+```bash
 pyinstaller migrate.spec
 ```
 
-or alternatively,
-
-```bash
-pyinstaller --onefile migrate.py
-```
-
-Note that PyInstaller does not support cross-compilation and will only compile for the currently targeted system.
+Note that PyInstaller does not support cross-compilation and will only compile for the currently targeted system. The `--hidden-import` option is required to ensure that `cffi` module is properly included when building on macOS.

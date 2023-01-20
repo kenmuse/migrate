@@ -10,7 +10,8 @@ dependencies = [
     "pyaml~=21.10.1",
     "pytest~=7.2.0",
     "pynacl~=1.5.0",
-    "requests~=2.28.1"
+    "requests~=2.28.1",
+    "importlib-metadata"
 ]
 
 [build-system]
