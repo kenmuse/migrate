@@ -76,3 +76,30 @@ pyinstaller migrate.spec
 ```
 
 Note that PyInstaller does not support cross-compilation and will only compile for the currently targeted system. The `--hidden-import` option is required to ensure that `cffi` module is properly included when building on macOS.
+
+## Building for Linux in Docker
+
+The steps to build the application for Linux in Docker are as follows:
+
+Starting on the command line in the root of the project:
+```bash
+cd .devcontainer
+docker build -t python311 .
+docker run -it -v "$(pwd)/..:/src" python311 /bin/bash
+```
+
+Once in the container:
+```bash
+python3 -m pip install --user .
+python3 -m pip install --user .[dev]
+pyinstaller migrate.spec
+```
+
+The executable will be located in the `dist` folder in the root of the project.
+Optionally, you can use `--platform linux/amd64` or `--platform linux/arm64` with both `docker run` and `docker build` to compile for a specific platform. For example:
+
+```bash
+cd .devcontainer
+docker build --platform linux/arm64 -t python311 .
+docker run --platform linux/arm64 -it -v "$(pwd)/..:/src" python311 /bin/bash
+```
