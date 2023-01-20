@@ -6,3 +6,4 @@ config.yml
 .migrate.egg-info
 build
 dist
+.venv
