@@ -82,6 +82,7 @@ Note that PyInstaller does not support cross-compilation and will only compile f
 The steps to build the application for Linux in Docker are as follows:
 
 Starting on the command line in the root of the project:
+
 ```bash
 cd .devcontainer
 docker build -t python311 .
@@ -89,6 +90,7 @@ docker run -it -v "$(pwd)/..:/src" python311 /bin/bash
 ```
 
 Once in the container:
+
 ```bash
 python3 -m pip install --user .
 python3 -m pip install --user .[dev]
@@ -103,3 +105,15 @@ cd .devcontainer
 docker build --platform linux/arm64 -t python311 .
 docker run --platform linux/arm64 -it -v "$(pwd)/..:/src" python311 /bin/bash
 ```
+
+## Building for macOS
+
+The steps are the same as for Linux, except that Docker is not used:
+
+```bash
+python3 -m pip install --user .
+python3 -m pip install --user .[dev]
+pyinstaller migrate.spec
+```
+
+Note that outside of a development environment, Apple requires the application to be signed for distribution. Otherwise, users will see a warning. The details for signing an application can be found [here](https://www.kenmuse.com/blog/notarizing-dotnet-console-apps-for-macos/#signing-the-code). An entitlements file is provided in the root of the project to support this process.
