@@ -73,10 +73,10 @@ def list_check_runs_for_commit(
     client: GhApi,
     org: str,
     repo: str,
-    name: str,
     ref: str,
-    status: str,
-    filter: str,
+    name: str = None,
+    status: str = None,
+    filter: str = None,
 ):
     """Retrieves the check runs for the provided commit"""
     result = call_with_exception_handler(
