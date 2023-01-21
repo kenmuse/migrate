@@ -92,6 +92,7 @@ docker run -it -v "$(pwd)/..:/src" python311 /bin/bash
 Once in the container:
 
 ```bash
+cd /src
 python3 -m pip install --user .
 python3 -m pip install --user .[dev]
 pyinstaller migrate.spec
@@ -104,6 +105,32 @@ Optionally, you can use `--platform linux/amd64` or `--platform linux/arm64` wit
 cd .devcontainer
 docker build --platform linux/arm64 -t python311 .
 docker run --platform linux/arm64 -it -v "$(pwd)/..:/src" python311 /bin/bash
+```
+
+## Building for Centos 7
+
+The following steps are not yet fully tested.
+
+```bash
+docker -it -v "$(pwd)/..:/src" centos:7 /bin/bash
+```
+
+In the container:
+
+```bash
+yum update -y
+yum install -y openssl-devel bzip2-devel libffi-devel wget
+yum groupinstall -y "Development Tools"
+wget https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tgz
+tar -xzf Python-3.11.1.tgz
+cd Python-3.11.1
+./configure --enable-optimizations
+make altinstall
+
+cd /src
+python3 -m pip install --user .
+python3 -m pip install --user .[dev]
+pyinstaller migrate.spec
 ```
 
 ## Building for macOS
