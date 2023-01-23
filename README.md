@@ -62,40 +62,45 @@ At the root of the project are the following files which support the packaging a
 
 The application is invoked using `python -m migrate.main`. By default, help will be displayed for each verb or action that is available. The application also supports running as a script using `python migrate/main.py`.
 
+## Virtual Environments
+
+If you're using the dev container directly, virtual environments are not needed. The container is configured as a dedicated space, and the packages are automatically installed using `pip` when the container starts. This includes the developer extras, such as `pyinstaller`. If you're creating a virtual environment, you can use the following commands to install the packages needed for development:
+
+```bash
+python -m pip install -e .
+python -m pip install ".[dev]"
+```
+
 ## Platform-specific compilation
 
 The application can be compiled to a native executable using PyInstaller. The following command is used to compile the application, creating a single executable file in the `/dist` folder:
 
-```bash
-pyinstaller --onefile --hidden-import=cffi migrate.py
-```
+Use the provided spec file:
 
-Or use the provided spec file:
 ```bash
 pyinstaller migrate.spec
 ```
 
-Note that PyInstaller does not support cross-compilation and will only compile for the currently targeted system. The `--hidden-import` option is required to ensure that `cffi` module is properly included when building on macOS.
+Or, use the equivalent command line:
+
+```bash
+pyinstaller --onefile --hidden-import=cffi --hidden-import=charset_normalizer migrate.py
+```
+
+Note that PyInstaller does not support cross-compilation and will only compile for the currently targeted system. The `--hidden-import` option is required to ensure that indirectly referenced modules are properly included when building on macOS and Windows.
+
+For builds outside of the dev container, a standalone script `build.sh` is provided which can restore the required packages and compile the application.
 
 ## Building for Linux in Docker
 
-The steps to build the application for Linux in Docker are as follows:
+The dev container can be used to build the application for systems derived from Debian 11.
 
-Starting on the command line in the root of the project:
+Starting on the command line in the root of the project, use the following commands to create a container and run the build:
 
 ```bash
 cd .devcontainer
 docker build -t python311 .
-docker run -it -v "$(pwd)/..:/src" python311 /bin/bash
-```
-
-Once in the container:
-
-```bash
-cd /src
-python3 -m pip install --user .
-python3 -m pip install --user .[dev]
-pyinstaller migrate.spec
+docker run -it --rm -v "$(pwd)/..:/src" python311 /src/build.sh
 ```
 
 The executable will be located in the `dist` folder in the root of the project.
@@ -104,34 +109,40 @@ Optionally, you can use `--platform linux/amd64` or `--platform linux/arm64` wit
 ```bash
 cd .devcontainer
 docker build --platform linux/arm64 -t python311 .
-docker run --platform linux/arm64 -it -v "$(pwd)/..:/src" python311 /bin/bash
+docker run --rm --platform linux/arm64 -it -v "$(pwd)/..:/src" python311 /src/build.sh
 ```
 
 ## Building for Centos 7
 
-The following steps are not yet fully tested.
+To compile for Centos using the provided Dockerfile, use the `Dockerfile.centos` file in the `docker` folder. To build the image for the current system architecture, use the following command:
 
 ```bash
-docker -it -v "$(pwd)/..:/src" centos:7 /bin/bash
+docker build -f docker/Dockerfile.centos -t python311-centos7 .
 ```
 
-In the container:
+To build for a specific architectures (`linux/arm64`, `linux/amd64`), specify the `--platform` option:
 
 ```bash
-yum update -y
-yum install -y openssl-devel bzip2-devel libffi-devel wget
-yum groupinstall -y "Development Tools"
-wget https://www.python.org/ftp/python/3.11.1/Python-3.11.1.tgz
-tar -xzf Python-3.11.1.tgz
-cd Python-3.11.1
-./configure --enable-optimizations
-make altinstall
-
-cd /src
-python3 -m pip install --user .
-python3 -m pip install --user .[dev]
-pyinstaller migrate.spec
+docker build --platform linux/amd64 -f docker/Dockerfile.centos -t python311-centos7  .
 ```
+
+To run the container, use the following command:
+
+```bash
+docker run -it -v "$(pwd)/..:/src" --rm python311-centos7 /src/build.sh
+```
+
+## Building for Windows in Linux (Wine)
+
+The application can be compiled using Windows with Python or using Wine in Docker. For example, the `tobix/pywine:3.11` image can be used to create a valid executable.
+
+To build the executable, use the following command:
+
+```bash
+docker run -it -v "$(pwd)/..:/src" --rm tobix:/pywine:3.11 /src/build.sh
+```
+
+The executable will be located in the `dist` folder in the root of the project.
 
 ## Building for macOS
 
@@ -139,7 +150,7 @@ The steps are the same as for Linux, except that Docker is not used:
 
 ```bash
 python3 -m pip install --user .
-python3 -m pip install --user .[dev]
+python3 -m pip install --user ".[dev]"
 pyinstaller migrate.spec
 ```
 
