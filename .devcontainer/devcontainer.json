@@ -14,7 +14,7 @@
 	},
 	"postStartCommand": {
 		"setup-git": "git config --global --add safe.directory ${containerWorkspaceFolder}",
-		"setup-pip": "python -m pip install --user --editable . && python -m pip install --user --editable .[dev]"
+		"setup-pip": "python -m pip install --user --editable . && python -m pip install .[dev]"
 	},
 	"customizations": {
 		"vscode": {
