@@ -64,11 +64,11 @@ def list_settings(ctx: TargetState, repo: str, output: click.File, compact: bool
 @click.option("-dr", "--dest", help="The destination repository")
 @migration_options
 @pass_migrationstate
-def copy_settings(ctx: MigrationState, src, dest, include_ghas):
+def copy_settings(ctx: MigrationState, src, dest):
     """Copies the settings from one repository to another"""
     src_client = create_client(hostname=ctx.src_hostname, token=ctx.src_token)
     dest_client = create_client(hostname=ctx.dest_hostname, token=ctx.dest_token)
-    src_settings = get_repo_settings(src_client, ctx.src_org, src, include_ghas)
+    src_settings = get_repo_settings(src_client, ctx.src_org, src)
     set_repo_settings(dest_client, ctx.dest_org, dest, src_settings)
 
 

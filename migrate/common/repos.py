@@ -106,6 +106,10 @@ class RepoSettings(DictData):
     default_branch: str = "main"
     visibility: RepoVisibility = RepoVisibility.PRIVATE
     ghas: GhasSettings = None
+    has_issues: bool = False
+    has_projects: bool = False
+    has_wiki: bool = False
+    has_pages: bool = False
 
     def __dict__(self):
         return self.to_dict()
@@ -218,6 +222,10 @@ def set_repo_settings(client: GhApi, org: str, repo: str, settings: RepoSettings
         allow_update_branch=settings.allow_update_branch,
         visibility=settings.visibility,
         security_and_analysis=settings.ghas.serialize(),
+        has_issues=settings.has_issues,
+        has_projects=settings.has_projects,
+        has_wiki=settings.has_wiki,
+        has_pages=settings.has_pages,
     )
 
     return RepoSettings.deserialize(result)
