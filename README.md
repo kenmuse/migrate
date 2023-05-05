@@ -139,7 +139,7 @@ The application can be compiled using Windows with Python or using Wine in Docke
 To build the executable, use the following command:
 
 ```bash
-docker run -it -v "$(pwd)/..:/src" --rm tobix:/pywine:3.11 /src/build.sh
+docker run -it -v "$(pwd)/..:/src" --rm tobix:/pywine:3.11 /src/build_wine.sh
 ```
 
 The executable will be located in the `dist` folder in the root of the project.
