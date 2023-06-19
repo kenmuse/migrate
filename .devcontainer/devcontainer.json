@@ -7,7 +7,9 @@
 	"features": {
 		"ghcr.io/devcontainers/features/git:1": {},
 		"ghcr.io/devcontainers/features/git-lfs:1": {},
-		"ghcr.io/devcontainers/features/github-cli:1": {}
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/powershell:1": {}
 	},
 
 	"remoteEnv": {
@@ -23,7 +25,9 @@
 				"ms-python.vscode-pylance",
 				"ms-python.black-formatter",
 				"GitHub.copilot",
-				"EditorConfig.EditorConfig"
+				"EditorConfig.EditorConfig",
+        "github.vscode-github-actions",
+        "ms-vscode.PowerShell"
 			]
 		}
 	}

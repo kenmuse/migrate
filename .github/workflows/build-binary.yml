@@ -1,0 +1,105 @@
+name: Build binaries
+
+on:
+  # Trigger builds based on manual request against any branch. Must
+  # exist on the main (default) branch to run.
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: 'The target architectures to build'
+        required: true
+        default: 'linux/amd64'
+
+  # Trigger builds based on a push to the main branch.
+  push:
+    branches:
+      - main
+
+env:
+    # Global configuration for the Python version to use.
+    PYTHON_VERSION: 3.11
+
+    # Global configuration for the target architectures to build.
+    # This isn't needed (the script has defaults), but it demonstrates how
+    # a workflow can use an input from a workflow_dispatch and fallback
+    # to a different set of values for other event types (in this case, push).
+    TARGETS: ${{ ( github.event_name == 'workflow_dispatch' && inputs.targets) || 'linux/amd64,centos/amd64,windows/amd64' }}
+
+jobs:
+    build_binaries:
+        name: Build binaries            # Friendly name for the job
+        strategy:                       # Configure this to run on a runner per set of matrix parameters
+          fail-fast: false              # Don't stop the workflow if a build on any job fails
+          matrix:
+            os: [ubuntu, windows]       # The OS to use for the build
+            # To build this in parallel, add an additional matrix parameter
+            # and use an expression to pass `matrix.target` to the build script.
+            # target: [linux/amd64,windows/amd64,linux/arm64,centos/amd64]
+        
+        runs-on: ${{ matrix.os}}-latest # Dynamically determine runner OS based on matrix parameter
+        steps:
+            
+            # Checkout the repository
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            # Since cross-platform Docker images are used, QEMU and BuildX are required
+            # QEMU is not compatible with a Windows runner.
+            - name: Set up QEMU
+              if: ${{ matrix.os == 'ubuntu' }}
+              uses: docker/setup-qemu-action@v2 
+
+            # BuildX is not needed with the Windows runner.
+            - name: Set up Docker BuildKit
+              if: ${{ matrix.os == 'ubuntu' }}
+              uses: docker/setup-buildx-action@v2
+
+            # Alternatively, the runner can be manually configured to support the build
+            # process. This is not recommended unless the environment is ephemeral;
+            # it globally alters the configuration. This does offer a higher parity
+            # with a developer environment, which would utilize these same tools directly.
+            # This would replace the QEMU and BuildKit setup steps above (and the Python
+            # script shows how to configure BuildKit directly).
+            # - name: Install OS dependencies
+            #   if: ${{ matrix.os == 'ubuntu' }}
+            #   run: |
+            #     sudo apt update
+            #     sudo apt-get install -y qemu qemu-user-static binfmt-support
+
+            # Configure the Python tools on the runner. Because the builds
+            # are executed from within Docker containers (to allow multi-arch), this setup
+            # is only required for supporting the build.py script used to orchestrate and
+            # compile the application. That script targets the same Python version as the
+            # application being built so that it supports being run from the dev container.
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: ${{ env.PYTHON_VERSION }}
+
+            # Execute the build script. All steps are encapsulated in the script.
+            # For parallel builds, additional matrix parameters could be used to
+            # specify the target architecture for each runner via `--targets`.
+            - name: Build binaries
+              if: ${{ matrix.os == 'ubuntu' }}
+              run: |
+                  sudo python3 "${{ github.workspace }}/scripts/build.py" --pythonVersion "${{ env.PYTHON_VERSION }}" --folder "${{ runner.temp }}/artifacts" --targets "${{ env.TARGETS }}"
+
+            # If the runner is Windows, the Windows-specific build can be directly used by
+            # the same Python script. It essentially invokes build_windows.ps1 directly and skips
+            # using the containerized builds.
+            # The Linux containers (and emulators) are not available, so we can't utilize this
+            # method for building the Linux binaries (or multiple platforms) on Windows runners.
+            # A similar approach could be used for building the Linux binaries directly on 
+            # the runner by calling `build.sh`, but that would not support ARM64 or Centos builds.
+            - name: Build Windows binaries
+              if: ${{ matrix.os == 'windows' }}
+              run: |
+                python3 "${{ github.workspace }}\scripts\build.py" --pythonVersion "${{ env.PYTHON_VERSION }}" --folder "${{ runner.temp }}\artifacts" --targets "windows/amd64"
+
+            # Upload the binary artifacts for later use. Normally, this code might be
+            # part of a release workflow, packaging and publishing a version of the application
+            - name: Upload binaries
+              uses: actions/upload-artifact@v3
+              with:
+                  name: binaries-${{ matrix.os }}
+                  path: ${{ runner.temp }}/artifacts
